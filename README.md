@@ -1,7 +1,7 @@
-<H3>ENTER YOUR NAME</H3>
-<H3>ENTER YOUR REGISTER NO.</H3>
+<H3>ENTER YOUR NAME:SHARAN G </H3>
+<H3>ENTER YOUR REGISTER NO: 212223230203</H3>
 <H3>EX. NO.4</H3>
-<H3>DATE:</H3>
+<H3>DATE: 18-11-2026</H3>
 <H1 ALIGN =CENTER> Implementation of Hidden Markov Model</H1>
 
 ## Aim: 
@@ -21,10 +21,66 @@ Step 8:Calculate the probability of the observed sequence by summing the last ro
 Step 9:Find the most likely sequence of hidden states by selecting the hidden state with the highest probability at each time step based on the alpha matrix.<br>
 
 ## Program:
-Insert your Program here
-
+```
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+G=nx.DiGraph()
+initialprobs=np.array([0.5,0.1,0.4])
+emissionprobs=np.array([[0.9,0.1],[0.4,0.6],[0.3,0.7]])
+transitionprobs=np.array([[0.2,0.4,0.4],[0.1,0.5,0.4],[0,0.3,0.7]])
+observationseq=np.array([0,0,0,1,1])
+observations=[]
+for i in range (len(observationseq)):
+    if observationseq[i]==0:
+        observations.append("Sad \nDay "+str(i))
+    else:
+        observations.append("Happy\nDay "+str(i))
+alpha=np.zeros((len(observationseq),len(initialprobs)))
+print(alpha)
+alpha[0,:]=initialprobs*emissionprobs[:,observationseq[0]]
+print(alpha)
+for i in range(1,len(observationseq)):
+    for j in range(len(initialprobs)):
+        alpha[i,j]=emissionprobs[j,observationseq[i]]*np.sum(alpha[i-1]*transitionprobs[:,j])
+print(alpha)
+stateseq=[]
+for i in range(len(observationseq)):
+    t=np.argmax(alpha[i])
+    if t==0:
+        stateseq.append("Rainy "+str(i))
+    elif t==1:
+        stateseq.append("Cloudy "+str(i))
+    else:
+        stateseq.append("Sunny "+str(i))
+print(stateseq)
+G.add_nodes_from(stateseq)
+edges=[]
+pos={}
+colormap=[]
+s=0
+for x in stateseq:
+    pos[x]=(s,0)
+    s+=2
+    colormap.append("lightblue")
+for i in range(len(stateseq)-1):
+    edges.append((stateseq[i],stateseq[i+1]))
+for i in range(len(stateseq)):
+    edges.append((stateseq[i],observations[i]))
+t=0
+for x in observations:
+    pos[x]=(t,-1)
+    t+=2
+    colormap.append("yellow")
+G.add_edges_from(edges)
+nx.draw(G,pos=pos,with_labels=True,node_size=5000,node_color=colormap)
+plt.show()
+```
 ## Output:
-Show your results here
+
+<img width="646" height="360" alt="image" src="https://github.com/user-attachments/assets/e67d9174-7977-4156-aef3-830dfeff6b30" />
+
+<img width="912" height="632" alt="image" src="https://github.com/user-attachments/assets/53bfe171-e3bb-434e-beed-d54fb58d0487" />
 
 ## Result:
 Thus Hidden Markov Model is implemented using python.
